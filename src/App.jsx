@@ -10,9 +10,9 @@ export default function App() {
   return (
     <div className="App">
 
-       {/* The navigation appears on every page. */}
+       {/* The navigation appears on every page */}
       <Nav />
-      
+
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/currencies" element={<Currencies />} />
