@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 
-export default function Price(props) {
+export default function Currencies() {
   // Read the CoinAPI key
   const apiKey = import.meta.env.VITE_COIN_API_KEY;
 
@@ -16,28 +16,43 @@ export default function Price(props) {
   const [coin, setCoin] = useState(null);
 
   // Request cryptocurrency from CoinAPI
-  const getCoin = async () => {
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
+  useEffect(() => {
+    const getCoin = async () => {
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
 
-      setCoin(data);
-    } catch (error) {
-      console.error(error);
-    }
+        setCoin(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getCoin();
+  }, [url]);
+
+  // Display the cryptocurrency data after it loads.
+  const loaded = () => {
+    // Find the USD exchange rate inside the rates array.
+    const usdRate = coin.rates.find(
+      (rate) => rate.asset_id_quote === "USD"
+    );
+
+    return (
+      <div>
+        <h1>
+          {coin.asset_id_base}/{usdRate.asset_id_quote}
+        </h1>
+
+        <h2>{usdRate.rate}</h2>
+      </div>
+    );
   };
 
-  // Run getCoin when the component loads
-  useEffect(() => {
-    getCoin();
-  }, [symbol]);
+  // Display a message while waiting for the API data.
+  const loading = () => {
+    return <h1>Loading...</h1>;
+  };
 
-  return (
-    <div>
-      <h1>This is the Price Component for {symbol}</h1>
-
-      {/* Temporarily confirm whether the API data loaded */}
-      <p>{coin ? "Coin data loaded" : "Loading..."}</p>
-    </div>
-  );
+  return coin && coin.rates ? loaded() : loading();
 }
